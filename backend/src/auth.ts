@@ -31,9 +31,9 @@ passport.use(
   })
 );
 
-// Local Strategy for user login
+// Local Strategy for user signin
 passport.use(
-  "login",
+  "signin",
   new LocalStrategy(
     {
       usernameField: "email",

@@ -7,7 +7,7 @@ const routes = Router();
 // Auth
 routes.post("/", () => console.log("Hello World!"));
 routes.post("/signup", AuthController.signup);
-routes.post("/login", AuthController.login);
+routes.post("/signin", AuthController.signin);
 routes.post("/logout", AuthController.logout);
 routes.get("/protected", secure);
 

@@ -3,9 +3,9 @@ import jwt from "jsonwebtoken";
 import { IUser } from "../../types";
 import passport from "../../auth";
 
-const login = (req: Request, res: Response, next: NextFunction) => {
+const Sign = (req: Request, res: Response, next: NextFunction) => {
   return passport.authenticate(
-    "login",
+    "Sign",
     async (err: Error, user: IUser | false, info: any) => {
       try {
         if (err) {
@@ -16,7 +16,7 @@ const login = (req: Request, res: Response, next: NextFunction) => {
         }
 
         // Autenticação bem-sucedida
-        req.login(user, { session: false }, async (error: Error) => {
+        req.Sign(user, { session: false }, async (error: Error) => {
           if (error) {
             return next(error); // Encaminha para o próximo middleware de erro
           }
@@ -38,4 +38,4 @@ const generateToken = (user: IUser): string => {
   return jwt.sign(payload, "TOP_SECRET");
 };
 
-export default login;
+export default Sign;

@@ -1,36 +1,38 @@
-import { Link, Outlet, Route, Routes } from 'react-router-dom'
-import './App.css'
-import AuthStatus from './components/auth/AuthStatus';
-import AuthProvider from './components/contexts/AuthProvider';
-import Login from './components/auth/Login';
-import RequireAuth from './components/auth/RequireAuth';
+import { Link, Outlet, Route, Routes } from "react-router-dom";
+import "./App.css";
+import AuthProvider from "./components/contexts/AuthProvider";
+import Sign from "./components/auth/Sign";
+import RequireAuth from "./components/auth/RequireAuth";
+import { Toaster } from "@/components/ui/sonner";
 
 export default function App() {
   return (
-    <AuthProvider>
-      <Routes>
-        <Route element={<Layout />}>
-          <Route path="/" element={<PublicPage />} />
-          <Route path="/login" element={<Login />} />
-          <Route
-            path="/protected"
-            element={
-              <RequireAuth>
-                <ProtectedPage />
-              </RequireAuth>
-            }
-          />
-        </Route>
-      </Routes>
-    </AuthProvider>
+    <>
+      <AuthProvider>
+        <Routes>
+          <Route path="/sign-in" element={<Sign signin />} />
+          <Route path="/sign-up" element={<Sign signup />} />
+          <Route element={<Layout />}>
+            <Route path="/" element={<PublicPage />} />
+            <Route
+              path="/protected"
+              element={
+                <RequireAuth>
+                  <ProtectedPage />
+                </RequireAuth>
+              }
+            />
+          </Route>
+        </Routes>
+      </AuthProvider>
+      <Toaster />
+    </>
   );
 }
 
 function Layout() {
   return (
     <div>
-      <AuthStatus />
-
       <ul>
         <li>
           <Link to="/">Public Page</Link>
