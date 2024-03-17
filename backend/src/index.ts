@@ -1,10 +1,10 @@
 import express from "express";
 import mongoose from "mongoose";
 import { config } from "dotenv";
-import cors from 'cors'
+import cors from "cors";
 import routes from "./routes.js";
-import { Server } from 'socket.io'
-import http from 'http'
+import { Server } from "socket.io";
+import http from "http";
 
 config();
 
@@ -15,10 +15,12 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cors());
 
-app.use('/api', routes);
+app.use("/api", routes);
 
-app.listen(8000, () => {
-  console.log("✅ - Server");
+const PORT = process.env.PORT || 8000;
+
+app.listen(PORT, () => {
+  console.log(`✅ - Server running on port ${PORT}`);
 });
 
 // ----- SOCKET -----
@@ -26,8 +28,7 @@ try {
   const server = http.createServer(app);
   const io = new Server(server);
 
-  io.on('connection', (socket) => {
-  });
+  io.on("connection", (socket) => {});
 
   console.log("✅ - SOCKET");
 } catch (error) {
@@ -36,7 +37,7 @@ try {
 
 // ----- DB -----
 
-const MONGODB_URL = process.env.MONGODB_URL
+const MONGODB_URL = process.env.MONGODB_URL;
 
 if (MONGODB_URL) {
   mongoose.connect(MONGODB_URL, { dbName: "db" });
