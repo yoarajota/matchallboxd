@@ -1,4 +1,4 @@
-import { useAuth } from "@/lib/auth";
+import { useAuth } from "@lib/utils";
 import { useLocation, useNavigate } from "react-router-dom";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -22,6 +22,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { useTranslation } from 'react-i18next';
 
 export default function Sign({
   signin,
@@ -32,6 +33,7 @@ export default function Sign({
 }) {
   const navigate: ReturnType<typeof useNavigate> = useNavigate();
   const location: ReturnType<typeof useLocation> = useLocation();
+  const { t }: ReturnType<typeof useTranslation> = useTranslation()
   const auth: ReturnType<typeof useAuth> = useAuth();
 
   const from = location.state?.from?.pathname || "/";
@@ -39,50 +41,56 @@ export default function Sign({
   const formSchema = z.object(
     signin
       ? {
-          email: z.string().email(),
-          password: z.string().min(8),
-        }
+        username: z.string().min(2).max(50).trim(),
+        password: z.string().min(8),
+      }
       : {
-          username: z.string().min(2).max(50),
-          email: z.string().email(),
-          password: z.string().min(8),
-        }
+        username: z.string().min(2).max(50).trim(),
+        nickname: z.string().min(2).max(100),
+        password: z.string().min(8),
+      }
   );
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: signin
       ? {
-          email: "",
-          password: "",
-        }
+        username: "",
+        password: "",
+      }
       : {
-          username: "",
-          email: "",
-          password: "",
-        },
+        username: "",
+        nickname: "",
+        password: "",
+      },
   });
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log(values);
-
-    // auth.signin(username, () => {
-    // Send them back to the page they tried to visit when they were
-    // redirected to the Sign page. Use { replace: true } so we don't create
-    // another entry in the history stack for the Sign page.  This means that
-    // when they get to the protected page and click the back button, they
-    // won't end up back on the Sign page, which is also really nice for the
-    // user experience.
+  const cb = () => {
     navigate(from, { replace: true });
-    // });
+  }
+
+  function onSubmit(values: z.infer<typeof formSchema>) {
+    if (signin) {
+      return auth.signin(values as User, cb)
+    }
+
+    return auth.signup(values as User, cb)
+  }
+
+  function footerButtonAction() {
+    if (signin) {
+      return navigate("/sign-up", { replace: true })
+    }
+
+    return navigate("/sign-in", { replace: true })
   }
 
   return (
     <div className="flex justify-center items-center h-screen w-full">
       <Card className="w-[400px]">
         <CardHeader>
-          <CardTitle>{signin ? "Login" : "Registrar"}</CardTitle>
-          <CardDescription>Card Description</CardDescription>
+          <CardTitle>{signin ? t("Sign In") : t("Sign Up")}</CardTitle>
+          <CardDescription>{signin ? t("Lorem In") : t("Lorem Up")}</CardDescription>
         </CardHeader>
         <CardContent>
           <Form {...form}>
@@ -92,12 +100,14 @@ export default function Sign({
               ) : (
                 <SignupFields form={form} />
               )}
-              <Button type="submit">Submit</Button>
+              <Button type="submit">{t("Submit")}</Button>
             </form>
           </Form>
         </CardContent>
-        <CardFooter>
-          <p>Card Footer</p>
+        <CardFooter className="flex justify-center">
+          <Button
+            onClick={footerButtonAction}
+            variant="link">{signin ? t("New here? Sign up!") : t("Already has an account? Sign in!")}</Button>
         </CardFooter>
       </Card>
     </div>
@@ -105,14 +115,16 @@ export default function Sign({
 }
 
 const SiginFields = ({ form }: { form: any }) => {
+  const { t }: ReturnType<typeof useTranslation> = useTranslation()
+
   return (
     <>
       <FormField
         control={form.control}
-        name="username"
+        name="nickname"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>Username</FormLabel>
+            <FormLabel>{t("Nickname")}</FormLabel>
             <FormControl>
               <Input placeholder="shadcn" {...field} />
             </FormControl>
@@ -125,9 +137,9 @@ const SiginFields = ({ form }: { form: any }) => {
         name="username"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>Username</FormLabel>
+            <FormLabel>{t("Password")}</FormLabel>
             <FormControl>
-              <Input placeholder="shadcn" {...field} />
+              <Input type="password" placeholder="shadcn" {...field} />
             </FormControl>
             <FormMessage />
           </FormItem>
@@ -138,6 +150,8 @@ const SiginFields = ({ form }: { form: any }) => {
 };
 
 const SignupFields = ({ form }: { form: any }) => {
+  const { t }: ReturnType<typeof useTranslation> = useTranslation()
+
   return (
     <>
       <FormField
@@ -145,25 +159,39 @@ const SignupFields = ({ form }: { form: any }) => {
         name="username"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>Username</FormLabel>
+            <FormLabel>{t("Username")}</FormLabel>
             <FormControl>
               <Input placeholder="shadcn" {...field} />
             </FormControl>
-            <FormDescription>This is your public display name.</FormDescription>
+            <FormDescription>{t("Lorem Impsum")}.</FormDescription>
             <FormMessage />
           </FormItem>
         )}
       />
       <FormField
         control={form.control}
-        name="username"
+        name="nickname"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>Username</FormLabel>
+            <FormLabel>{t("Nickname")}</FormLabel>
             <FormControl>
               <Input placeholder="shadcn" {...field} />
             </FormControl>
-            <FormDescription>This is your public display name.</FormDescription>
+            <FormDescription>{t("Lorem Impsum")}.</FormDescription>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+      <FormField
+        control={form.control}
+        name="password"
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel>{t("Password")}</FormLabel>
+            <FormControl>
+              <Input type="password" placeholder="shadcn" {...field} />
+            </FormControl>
+            <FormDescription>{t("Lorem Impsum")}</FormDescription>
             <FormMessage />
           </FormItem>
         )}

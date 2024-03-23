@@ -5,10 +5,10 @@ REM Usage example: .\start.bat dev
 
 REM Start frontend
 if %1 == dev (
-    start cmd.exe /K "cd frontend && npm run dev"
+    start cmd.exe /K "cd frontend && npm i && npm run dev"
 ) else (
-    start cmd.exe /K "cd frontend && npm run build && npm run preview"
+    start cmd.exe /K "cd frontend && npm i && npm run build && npm run preview"
 )
 
 REM Start backend
-start cmd.exe /K "cd backend && npm run dev"
+start cmd.exe /K "cd backend && npm i && npm run dev"

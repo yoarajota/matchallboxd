@@ -1,10 +1,12 @@
-import { fakeAuthProvider } from "@/lib/auth";
+import api from "@lib/axios";
+import { AxiosError, AxiosResponse } from "axios";
 import { createContext, useState } from "react";
 
 interface AuthContextType {
-  user: any;
-  signin: (user: string, callback: VoidFunction) => void;
-  signout: (callback: VoidFunction) => void;
+  user: User | null;
+  signin: (user: User, callback: VoidFunction | null) => void;
+  signup: (user: User, callback: VoidFunction | null) => void;
+  signout: (callback: VoidFunction | null) => void;
 }
 
 export const AuthContext = createContext<AuthContextType>(null!);
@@ -14,23 +16,45 @@ export default function AuthProvider({
 }: {
   children: React.ReactNode;
 }) {
-  let [user, setUser] = useState<any>(null);
+  const [user, setUser] = useState<User | null>(null);
 
-  let signin = (newUser: string, callback: VoidFunction) => {
-    return fakeAuthProvider.signin(() => {
+  const signin = (signInUser: User, callback: VoidFunction | null = null) => {
+    api.post("sign-in", signInUser).then((response: AxiosResponse) => {
+      setUser(signInUser);
+
+      if (callback) {
+        callback();
+      }
+    }).catch((error: AxiosError) => {
+
+    })
+  };
+
+  const signup = (newUser: User, callback: VoidFunction | null = null) => {
+    api.post("sign-up", newUser).then((response: AxiosResponse) => {
       setUser(newUser);
-      callback();
-    });
+
+      if (callback) {
+        callback();
+      }
+    }).catch((error: AxiosError) => {
+
+    })
   };
 
-  let signout = (callback: VoidFunction) => {
-    return fakeAuthProvider.signout(() => {
-      setUser(null);
-      callback();
-    });
+  const signout = (callback: VoidFunction | null = null) => {
+    setUser(null);
+
+    api.post("sign-out").then((response: AxiosResponse) => {
+      if (callback) {
+        callback();
+      }
+    }).catch((error: AxiosError) => {
+
+    })
   };
 
-  let value = { user, signin, signout };
+  const value = { user, signin, signup, signout };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }

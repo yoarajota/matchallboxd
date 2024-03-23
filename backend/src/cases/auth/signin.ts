@@ -33,7 +33,7 @@ const Sign = (req: Request, res: Response, next: NextFunction) => {
 
 // Função para gerar o token JWT
 const generateToken = (user: IUser): string => {
-  const payload = { _id: user._id, email: user.email };
+  const payload = { _id: user._id, nickname: user.nickname };
   
   return jwt.sign(payload, "TOP_SECRET");
 };

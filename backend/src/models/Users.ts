@@ -2,7 +2,7 @@ import mongoose, { Schema } from "mongoose";
 import bcrypt from "bcrypt";
 
 const Userschema = new Schema({
-  email: {
+  nickname: {
     type: String,
     required: true,
     unique: true,

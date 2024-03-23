@@ -28,7 +28,7 @@ try {
   const server = http.createServer(app);
   const io = new Server(server);
 
-  io.on("connection", (socket) => {});
+  io.on("connection", (socket) => { });
 
   console.log("✅ - SOCKET");
 } catch (error) {
@@ -50,4 +50,6 @@ if (MONGODB_URL) {
   db.once("open", function () {
     console.log("✅ - DB");
   });
+} else {
+  console.log("❌ - MONGO DB KEY MISSING");
 }
