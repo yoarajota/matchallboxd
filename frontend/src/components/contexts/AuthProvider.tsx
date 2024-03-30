@@ -1,12 +1,13 @@
 import api from "@lib/axios";
 import { AxiosError, AxiosResponse } from "axios";
-import { createContext, useState } from "react";
-
+import { createContext, useCallback, useEffect, useRef, useState } from "react";
+import { toast } from "sonner";
 interface AuthContextType {
   user: User | null;
   signin: (user: User, callback: VoidFunction | null) => void;
   signup: (user: User, callback: VoidFunction | null) => void;
   signout: (callback: VoidFunction | null) => void;
+  queryingUser: boolean;
 }
 
 export const AuthContext = createContext<AuthContextType>(null!);
@@ -14,47 +15,91 @@ export const AuthContext = createContext<AuthContextType>(null!);
 export default function AuthProvider({
   children,
 }: {
-  children: React.ReactNode;
+  readonly children: React.ReactNode;
 }) {
   const [user, setUser] = useState<User | null>(null);
+  const [queryingUser, setQueryingUser] = useState<boolean>(true);
+  const didMountRef = useRef(false);
 
-  const signin = (signInUser: User, callback: VoidFunction | null = null) => {
-    api.post("sign-in", signInUser).then((response: AxiosResponse) => {
-      setUser(signInUser);
+  useEffect(() => {
+    if (!didMountRef.current) {
+      const fetchUser = async () => {
+        const token = localStorage.getItem("access_token");
+  
+        if (token && !user) {
+          try {
+            const response: AxiosResponse = await api.get("me");
+            setUser(response.data.data.user);
+          } catch (error) {
+            console.error(error);
+            localStorage.removeItem("access_token");
+          }
+        }
+  
+        setQueryingUser(false);
+      };
+  
+      fetchUser();
+      didMountRef.current = true;
+    }
+  }, []);
 
-      if (callback) {
-        callback();
-      }
-    }).catch((error: AxiosError) => {
+  const signin = useCallback(
+    (signInUser: User, callback: VoidFunction | null = null) => {
+      api
+        .post("sign-in", signInUser)
+        .then((response: AxiosResponse) => {
+          setUser(response.data.data.user);
+          localStorage.setItem("access_token", response.data.data.token);
 
-    })
-  };
+          if (callback) {
+            callback();
+          }
+        })
+        .catch((error: AxiosError) => {
+          toast.error((error.response?.data as ErrorResponse).message);
+        });
+    },
+    []
+  );
 
-  const signup = (newUser: User, callback: VoidFunction | null = null) => {
-    api.post("sign-up", newUser).then((response: AxiosResponse) => {
-      setUser(newUser);
+  const signup = useCallback(
+    (newUser: User, callback: VoidFunction | null = null) => {
+      api
+        .post("sign-up", newUser)
+        .then((response: AxiosResponse) => {
+          toast.success((response?.data as SuccessResponse).message);
 
-      if (callback) {
-        callback();
-      }
-    }).catch((error: AxiosError) => {
+          if (callback) {
+            callback();
+          }
+        })
+        .catch((error: AxiosError) => {
+          toast.error((error.response?.data as ErrorResponse).message);
+        });
+    },
+    []
+  );
 
-    })
-  };
-
-  const signout = (callback: VoidFunction | null = null) => {
+  const signout = useCallback((callback: VoidFunction | null = null) => {
     setUser(null);
+    localStorage.removeItem("access_token");
 
-    api.post("sign-out").then((response: AxiosResponse) => {
-      if (callback) {
-        callback();
-      }
-    }).catch((error: AxiosError) => {
+    api
+      .post("sign-out")
+      .then(() => {
+        if (callback) {
+          callback();
+        }
+      })
+      .catch(() => {});
+  }, []);
 
-    })
-  };
+  const value = { user, signin, signup, signout, queryingUser };
 
-  const value = { user, signin, signup, signout };
-
-  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+  return !queryingUser ? (
+    <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
+  ) : (
+    <></>
+  );
 }

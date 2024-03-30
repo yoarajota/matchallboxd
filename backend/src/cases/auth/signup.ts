@@ -7,10 +7,10 @@ const signup = async (req: Request, res: Response) => {
   try {
     await UserModel.create(req.body);
 
-    return RestResponse.success(res, "User created");
+    return RestResponse.success(res, "Cadastrado com sucesso");
   } catch (error) {
     Log.error(error.message)
-    return RestResponse.error(res, "Failed to create user");
+    return RestResponse.error(res, "Falha ao criar o cadastro");
   }
 };
 

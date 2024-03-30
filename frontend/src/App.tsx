@@ -1,9 +1,11 @@
-import { Link, Outlet, Route, Routes } from "react-router-dom";
+import { Outlet, Route, Routes } from "react-router-dom";
 import "./App.css";
 import AuthProvider from "./components/contexts/AuthProvider";
 import Sign from "./components/auth/Sign";
 import RequireAuth from "./components/auth/RequireAuth";
 import { Toaster } from "@/components/ui/sonner";
+import Menu from "./components/pages/Menu";
+import Room from "./components/pages/Room";
 
 export default function App() {
   return (
@@ -11,20 +13,28 @@ export default function App() {
       <AuthProvider>
         <Routes>
           <Route path="/sign-in" element={<Sign signin />} />
-          <Route path="/sign-up" element={<Sign signup />} />
+          <Route path="/sign-up" element={<Sign />} />
           <Route element={<Layout />}>
-            <Route path="/" element={<PublicPage />} />
             <Route
-              path="/protected"
+              path="/"
               element={
                 <RequireAuth>
-                  <ProtectedPage />
+                  <Menu />
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="/room/:id"
+              element={
+                <RequireAuth>
+                  <Room />
                 </RequireAuth>
               }
             />
           </Route>
         </Routes>
       </AuthProvider>
+
       <Toaster />
     </>
   );
@@ -32,25 +42,8 @@ export default function App() {
 
 function Layout() {
   return (
-    <div>
-      <ul>
-        <li>
-          <Link to="/">Public Page</Link>
-        </li>
-        <li>
-          <Link to="/protected">Protected Page</Link>
-        </li>
-      </ul>
-
+    <main>
       <Outlet />
-    </div>
+    </main>
   );
-}
-
-function PublicPage() {
-  return <h3>Public</h3>;
-}
-
-function ProtectedPage() {
-  return <h3>Protected</h3>;
 }

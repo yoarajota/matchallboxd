@@ -1,8 +1,4 @@
-import { Document } from "mongoose";
+import { Document, InferSchemaType } from "mongoose";
+import { Userschema } from "./models/Users";
 
-interface IUser extends Document {
-  _id: string;
-  nickname: string;
-  password: string;
-  isValidPassword(password: string): Promise<boolean>;
-}
+type IUser = InferSchemaType<typeof Userschema> extends Document

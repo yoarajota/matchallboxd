@@ -1,7 +1,13 @@
 import axios from 'axios'
 
 function getAuthToken() {
-    return localStorage.getItem("access_token") ?? ''
+    const token = localStorage.getItem("access_token")
+
+    if (token) {
+        return "Bearer " + token
+    }
+    
+    return ''
 }
 
 const api = axios.create({

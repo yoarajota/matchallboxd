@@ -1,8 +1,12 @@
-import mongoose, { Schema } from "mongoose";
+import mongoose, { InferSchemaType, Schema } from "mongoose";
 import bcrypt from "bcrypt";
 
-const Userschema = new Schema({
+export const Userschema = new Schema({
   nickname: {
+    type: String,
+    required: true,
+  },
+  username: {
     type: String,
     required: true,
     unique: true,

@@ -36,12 +36,12 @@ passport.use(
   "signin",
   new LocalStrategy(
     {
-      usernameField: "nickname",
+      usernameField: "username",
       passwordField: "password",
     },
-    async (nickname: string, password: string, done) => {
+    async (username: string, password: string, done) => {
       try {
-        const user: IUser = await User.findOne({ nickname });
+        const user: IUser = await User.findOne({ username });
 
         if (!user) {
           return done(null, false, { message: "User not found" });

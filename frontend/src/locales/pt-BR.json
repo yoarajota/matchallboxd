@@ -1,4 +1,9 @@
 {
-  "Register": "Register",
-  "Login": "Login"
+  "Register": "Registrar",
+  "Login": "Entrar",
+  "Hi!": "Olá, {{name}}",
+  "Settings": "Configurações",
+  "Join Room": "Entrar numa sala",
+  "New Room": "Nova sala",
+  "Room x": "Sala {{id}}"
 }
