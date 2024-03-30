@@ -10,10 +10,22 @@ import {
 } from "../ui/card";
 import { Separator } from "../ui/separator";
 import { useTranslation } from "react-i18next";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { useEffect } from "react";
 
 export default function Room() {
   const { id } = useParams();
   const { t }: ReturnType<typeof useTranslation> = useTranslation();
+
+  useEffect(() => {
+    const ws = new WebSocket("ws://localhost:8080");
+
+    ws.onopen = () => {
+      console.log("Connected");
+
+      ws.send("Hello");
+    };
+  });
 
   return (
     <Main>
@@ -30,17 +42,24 @@ export default function Room() {
                   <CardFooter></CardFooter>
                 </Card>
                 <Card className="sm:col-span-2">
-                  <CardHeader className="pb-3">
-                    <CardTitle>{t("Room x", { id })}</CardTitle>
-                    <CardDescription className="max-w-lg text-balance leading-relaxed"></CardDescription>
-                  </CardHeader>
-                  <CardFooter></CardFooter>
+                  <CardHeader />
+                  <CardContent className="flex gap-x-4">
+                    <Avatar>
+                      <AvatarImage src="https://github.com/yoarajota.png" />
+                      <AvatarFallback>YJ</AvatarFallback>
+                    </Avatar>
+                    <Avatar>
+                      <AvatarImage src="https://github.com/yoarajota.png" />
+                      <AvatarFallback>YJ</AvatarFallback>
+                    </Avatar>
+                  </CardContent>
+                  <CardFooter />
                 </Card>
               </div>
               <Card>
                 <CardHeader className="px-7">
                   <CardTitle>asdasd</CardTitle>
-                  <CardDescription>asdas</CardDescription>
+                  <CardDescription></CardDescription>
                 </CardHeader>
                 <CardContent>asdasdas</CardContent>
               </Card>

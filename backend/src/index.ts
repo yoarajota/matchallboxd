@@ -3,8 +3,7 @@ import mongoose from "mongoose";
 import { config } from "dotenv";
 import cors from "cors";
 import routes from "./routes.js";
-import { Server } from "socket.io";
-import http from "http";
+import handleWebSocket from "./webSocket.js";
 
 config();
 
@@ -25,12 +24,8 @@ app.listen(PORT, () => {
 
 // ----- SOCKET -----
 try {
-  const server = http.createServer(app);
-  const io = new Server(server);
-
-  io.on("connection", (socket) => { });
-
-  console.log("✅ - SOCKET");
+  handleWebSocket()
+  console.log("✅ - WEB SOCKET");
 } catch (error) {
   console.log("❌ - SOCKET");
 }
