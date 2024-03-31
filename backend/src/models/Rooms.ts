@@ -1,13 +1,7 @@
 import mongoose, { Schema } from "mongoose";
 
-const Userschema = new Schema({
-  name: {
-    type: String,
-    required: true,
-    unique: true,
-  },
-});
+const roomsSchema = new Schema();
 
-const UserModel = mongoose.model("rooms", Userschema);
+const RoomsModel = mongoose.model("rooms", roomsSchema);
 
-export default UserModel;
+export default RoomsModel;

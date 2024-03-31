@@ -1,6 +1,6 @@
 import passport from "passport";
 import { Strategy as LocalStrategy } from "passport-local";
-import { Strategy as JwtStrategy, ExtractJwt } from "passport-jwt";
+import { Strategy as JwtStrategy } from "passport-jwt";
 import User from "./models/Users"; // Import your User model and UserDocument type
 import { IUser } from "./types";
 
@@ -9,9 +9,17 @@ interface JwtPayload {
   _id: string;
 }
 
+const cookieExtractor = function (req) {
+  let token = null;
+
+  if (req && req.cookies) token = req.cookies["access_token"];
+
+  return token;
+};
+
 // Configuration options for JWT strategy
 const opts: any = {}; // Change any to proper type
-opts.jwtFromRequest = ExtractJwt.fromAuthHeaderAsBearerToken();
+opts.jwtFromRequest = cookieExtractor
 opts.secretOrKey = "TOP_SECRET";
 
 // JWT Strategy for token-based authentication

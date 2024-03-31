@@ -26,12 +26,19 @@ const signin = (req: Request, res: Response, next: NextFunction) => {
 
           const token = generateToken(user);
 
+          res.cookie('access_token', token, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === "production",
+            maxAge: 1000 * 60 * 60 *  24 * 7
+          });
+
           return RestResponse.success(res, "Authenticado com sucesso", {
-            token,
             user: _.pickBy(user._doc, (_, key: string) => key !== "password"),
           });
         });
       } catch (error) {
+        console.log(error)
+
         return next(error); // Encaminha para o próximo middleware de erro
       }
     }

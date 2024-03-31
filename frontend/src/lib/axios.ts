@@ -1,20 +1,9 @@
 import axios from 'axios'
 
-function getAuthToken() {
-    const token = localStorage.getItem("access_token")
-
-    if (token) {
-        return "Bearer " + token
-    }
-    
-    return ''
-}
-
 const api = axios.create({
-    baseURL: import.meta.env.VITE_BACKEND_URL + "/api/",
+    baseURL: "http://" + import.meta.env.VITE_BACKEND_DOMAIN + "/api/",
 });
 
-api.defaults.headers.common['Authorization'] = getAuthToken();
-api.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded';
+api.defaults.withCredentials = true
 
 export default api

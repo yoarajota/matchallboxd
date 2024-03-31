@@ -24,21 +24,18 @@ export default function AuthProvider({
   useEffect(() => {
     if (!didMountRef.current) {
       const fetchUser = async () => {
-        const token = localStorage.getItem("access_token");
-  
-        if (token && !user) {
+        if (!user) {
           try {
             const response: AxiosResponse = await api.get("me");
             setUser(response.data.data.user);
           } catch (error) {
             console.error(error);
-            localStorage.removeItem("access_token");
           }
         }
-  
+
         setQueryingUser(false);
       };
-  
+
       fetchUser();
       didMountRef.current = true;
     }
@@ -50,7 +47,6 @@ export default function AuthProvider({
         .post("sign-in", signInUser)
         .then((response: AxiosResponse) => {
           setUser(response.data.data.user);
-          localStorage.setItem("access_token", response.data.data.token);
 
           if (callback) {
             callback();
@@ -83,7 +79,6 @@ export default function AuthProvider({
 
   const signout = useCallback((callback: VoidFunction | null = null) => {
     setUser(null);
-    localStorage.removeItem("access_token");
 
     api
       .post("sign-out")

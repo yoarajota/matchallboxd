@@ -1,7 +1,9 @@
 type User = {
+  _id: string;
   username: string;
   nickname: string;
   password: string;
+  __v: number;
 };
 
 type SuccessResponse = {
