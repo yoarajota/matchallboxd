@@ -42,7 +42,7 @@ const wssUpgrade = async function upgrade(request, socket, head) {
     wss.handleUpgrade(request, socket, head, (ws) => {
       wss.emit("connection", ws, request);
     });
-  })(request, null, () => {});
+  })(request, null, () => { });
 };
 
 export default wssUpgrade;
