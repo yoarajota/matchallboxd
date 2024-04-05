@@ -1,6 +1,6 @@
 import api from "@lib/axios";
 import { AxiosError, AxiosResponse } from "axios";
-import { createContext, useCallback, useEffect, useRef, useState } from "react";
+import { createContext, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
 interface AuthContextType {
   user: User | null;
@@ -90,7 +90,16 @@ export default function AuthProvider({
       .catch(() => {});
   }, []);
 
-  const value = { user, signin, signup, signout, queryingUser };
+  const value: AuthContextType = useMemo(
+    () => ({
+      user,
+      signin,
+      signup,
+      signout,
+      queryingUser,
+    }),
+    [queryingUser, signin, signout, signup, user]
+  );
 
   return !queryingUser ? (
     <AuthContext.Provider value={value}>{children}</AuthContext.Provider>

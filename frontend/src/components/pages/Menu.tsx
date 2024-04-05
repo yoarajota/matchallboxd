@@ -23,7 +23,7 @@ import { useState } from "react";
 
 export default function Menu() {
   const { t }: ReturnType<typeof useTranslation> = useTranslation();
-  const { user } = useAuth();
+  const { user, signout } = useAuth();
   const navigate = useNavigate();
   const [code, setCode] = useState("");
 
@@ -58,13 +58,13 @@ export default function Menu() {
         </CardHeader>
         <CardContent>
           <nav className="grid items-start px-2 text-sm font-medium lg:px-4">
-            <a
+            <div
               onClick={newRoom}
               className="cursor-pointer flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary"
             >
               <CirclePlus className="h-4 w-4" />
               {t("New Room")}
-            </a>
+            </div>
 
             <Dialog>
               <DialogTrigger asChild>
@@ -105,6 +105,13 @@ export default function Menu() {
               <Settings className="h-4 w-4" />
               {t("Settings")}
             </Link>
+            <div
+              onClick={signout}
+              className="cursor-pointer flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary"
+            >
+              <CirclePlus className="h-4 w-4" />
+              {t("New Room")}
+            </div>
           </nav>
         </CardContent>
       </Card>
