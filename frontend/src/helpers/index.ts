@@ -10,3 +10,7 @@ export const stringInitialLetters = (name: string, maxLength: number = 0) => {
 
   return str;
 };
+
+export function formatDate(value: string, locale: string) {
+  return new Intl.DateTimeFormat(locale).format(new Date(value));
+}

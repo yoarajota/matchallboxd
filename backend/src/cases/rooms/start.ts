@@ -3,7 +3,7 @@ import { RestResponse } from "../../helpers/RestResponse";
 import { Log } from "../../helpers";
 import tmdb from "../../clients/tmdb";
 import WebSocket from "ws";
-import cookie from "cookie";
+import RoomsModel from "../../models/Rooms";
 
 const start = async (req: Request, res: Response) => {
   try {
@@ -46,6 +46,7 @@ const start = async (req: Request, res: Response) => {
           })
         );
 
+        wsc.close()
         resolve(wsc.readyState);
       });
 
@@ -59,10 +60,10 @@ const start = async (req: Request, res: Response) => {
       });
     });
 
-    return RestResponse.success(res, "Sala encontrada!", moviesList);
+    return RestResponse.success(res, "Sala iniciada!");
   } catch (error) {
     Log.error(error.message);
-    return RestResponse.error(res, "Sala não encontrada!");
+    return RestResponse.error(res, "Sala não iniciada!");
   }
 };
 

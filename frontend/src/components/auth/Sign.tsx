@@ -72,6 +72,8 @@ export default function Sign({ signin }: { readonly signin?: boolean }) {
   }
 
   function footerButtonAction() {
+    form.reset();
+
     if (signin) {
       return navigate("/sign-up", { replace: true });
     }
@@ -83,9 +85,9 @@ export default function Sign({ signin }: { readonly signin?: boolean }) {
     <Main>
       <Card className="w-[400px]">
         <CardHeader>
-          <CardTitle>{signin ? t("Sign In") : t("Sign Up")}</CardTitle>
+          <CardTitle>{signin ? t("Login") : t("Register")}</CardTitle>
           <CardDescription>
-            {signin ? t("Lorem In") : t("Lorem Up")}
+            {signin ? t("Enter in your account") : t("Create an account")}
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -161,7 +163,7 @@ const SignupFields = ({ form }: { form: any }) => {
             <FormControl>
               <Input {...field} />
             </FormControl>
-            <FormDescription>{t("Lorem Impsum")}.</FormDescription>
+            <FormDescription>{t("People will see this name")}.</FormDescription>
             <FormMessage />
           </FormItem>
         )}
@@ -175,7 +177,7 @@ const SignupFields = ({ form }: { form: any }) => {
             <FormControl>
               <Input {...field} />
             </FormControl>
-            <FormDescription>{t("Lorem Impsum")}.</FormDescription>
+            <FormDescription>{t("Used to login")}.</FormDescription>
             <FormMessage />
           </FormItem>
         )}
@@ -189,7 +191,6 @@ const SignupFields = ({ form }: { form: any }) => {
             <FormControl>
               <Input type="password" {...field} />
             </FormControl>
-            <FormDescription>{t("Lorem Impsum")}</FormDescription>
             <FormMessage />
           </FormItem>
         )}

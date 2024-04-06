@@ -1,7 +1,7 @@
 import { Link, useNavigate } from "react-router-dom";
 import Main from "../Main";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
-import { Settings, CirclePlus, LogIn } from "lucide-react";
+import { Settings, CirclePlus, LogIn, LogOut } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { useAuth } from "@/lib/utils";
 import api from "@/lib/axios";
@@ -40,7 +40,7 @@ export default function Menu() {
 
   const goToRoom = () => {
     if (!code) {
-      return toast.error(t("The code is required."));
+      return toast.error(t("The code is required"));
     }
 
     // Request to test if the room exists
@@ -109,8 +109,8 @@ export default function Menu() {
               onClick={signout}
               className="cursor-pointer flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary"
             >
-              <CirclePlus className="h-4 w-4" />
-              {t("New Room")}
+              <LogOut className="h-4 w-4" />
+              {t("Logout")}
             </div>
           </nav>
         </CardContent>
