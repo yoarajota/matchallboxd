@@ -18,15 +18,9 @@ import { Button } from "../ui/button";
 import { ArrowLeft, CornerDownLeft, MessageCircle } from "lucide-react";
 import { Label } from "@radix-ui/react-label";
 import { Textarea } from "../ui/textarea";
-import {
-  Sheet,
-  SheetContent,
-  SheetDescription,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from "@/components/ui/sheet";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import useWindowDimensions from "@/custom_hooks/useWindowDimensions";
+import api from "@/lib/axios";
 
 type ToClientMessage = {
   action: string;
@@ -36,16 +30,27 @@ type ToClientMessage = {
   };
 };
 
+type Movie = {
+  id: number,
+  title: string,
+  backdrop_path: string,
+  poster_path: string,
+  release_date: string,
+  overview: string,
+  vote: number,
+};
+
 export default function Room() {
   const { id } = useParams();
   const { t }: ReturnType<typeof useTranslation> = useTranslation();
   const { user } = useAuth();
   const navigate = useNavigate();
+  const [isAdmin, setIsAdmin] = useState<boolean>(false);
   const [usersInRoom, setUsersInRoom] = useState<User[]>([
     _.pickBy(user, (_: string, key: string) => key !== "username") as User,
   ]);
-
   const { width } = useWindowDimensions();
+  const [movieList, setMovieList] = useState<Movie[]>([]); // [1
 
   // Dentro do componente
   const ws = useRef<WebSocket | null>(null);
@@ -99,8 +104,14 @@ export default function Room() {
           // Remove o usuário que saiu da lista
           users.filter((user) => user._id !== data.user_left._id)
         );
+      }
 
-        return;
+      if (action === "new_admin") {
+        setIsAdmin(true);
+      }
+
+      if (action === "start") {
+        setMovieList(data.movies);
       }
     };
   }, []);
@@ -110,6 +121,18 @@ export default function Room() {
       ws.current.onclose = function () {}; // disable onclose handler first
       ws.current.close();
     }
+  };
+
+  const start = () => {
+    api
+      .get("room/start", {
+        params: {
+          room: id,
+        },
+      })
+      .then((response) => {
+        console.log(response);
+      });
   };
 
   window.onbeforeunload = function () {
@@ -125,21 +148,13 @@ export default function Room() {
               <Card className="sm:col-span-2">
                 <CardHeader className="pb-3">
                   <CardTitle className="flex gap-2 flex-wrap items-center">
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => {
-                        navigate("/");
-                        leaveSocket();
-                      }}
-                    >
-                      <ArrowLeft className="h-5 w-5" />
-                    </Button>
                     <h4 className="scroll-m-20 text-xl font-semibold tracking-tight">
                       {t("Room x", { id })}
                     </h4>
                   </CardTitle>
-                  <CardDescription className="max-w-lg text-balance leading-relaxed"></CardDescription>
+                  <CardDescription className="max-w-lg text-balance leading-relaxed flex justify-end">
+                    {isAdmin && <Button onClick={start}> {t("Start")} </Button>}
+                  </CardDescription>
                 </CardHeader>
                 <CardFooter></CardFooter>
               </Card>
@@ -162,13 +177,27 @@ export default function Room() {
                 <CardTitle>asdasd</CardTitle>
                 <CardDescription>asd</CardDescription>
               </CardHeader>
-              <CardContent>
-                <Card>
-                  <CardContent></CardContent>
+              <CardContent className="my-auto py-0">
+                <Card className="h-[500px]">
+                  <CardContent className="p-0">
+                    {movieList.map((movie) => movie.title)}
+                  </CardContent>
                 </Card>
               </CardContent>
             </Card>
           </div>
+          <Button
+            className="absolute left-8"
+            variant="outline"
+            size="icon"
+            onClick={() => {
+              navigate("/");
+              leaveSocket();
+            }}
+          >
+            <ArrowLeft className="size-3.5" />
+          </Button>
+
           {width > 1280 ? (
             <Card className="overflow-hidden w-full h-full mx-auto flex flex-col justify-end bg-muted/50 col-span-3 xl:col-span-1 sm:grid-rows-6">
               <CardContent className="p-6 text-sm">

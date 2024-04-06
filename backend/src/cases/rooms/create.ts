@@ -5,7 +5,9 @@ import RoomsModel from "../../models/Rooms";
 
 const create = async (req: Request, res: Response) => {
   try {
-    const room = new RoomsModel({});
+    const room = new RoomsModel({
+      admin_id: req.user._id,
+    });
     await room.save();
 
     // Get the room id

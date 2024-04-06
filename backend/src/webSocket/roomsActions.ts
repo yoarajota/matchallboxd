@@ -4,24 +4,37 @@ import _ from "lodash";
 
 const rooms = {};
 
-const userData = (user) =>
-  _.pickBy(
-    user._doc,
-    (_, key) => key !== "password" && key !== "username"
+export const notifyAdmin = (wsClient, room) => {
+  wsClient.send(
+    JSON.stringify({
+      room,
+      action: "new_admin",
+      data: {},
+    })
   );
+};
 
-function useRoomActions(ws, request) {
-  const join = ({ room }) => {
+const userData = (user) =>
+  _.pickBy(user._doc, (_, key) => key !== "password" && key !== "username");
+
+function useRoomActions(ws = null, request = null) {
+  const join = async ({ room }) => {
     if (!rooms[room]) {
       rooms[room] = new Set();
+      ws.isAdmin = true;
+      // Store in the room, the admin id
+      await RoomsModel.updateOne({ _id: room }, { admin_id: request.user._id });
+
+      notifyAdmin(ws, room);
     }
 
     rooms[room].add(ws);
 
     const usersInRoom = [];
+
     rooms[room].forEach((client) => {
       if (client !== ws && client.readyState === WebSocket.OPEN) {
-        const data = userData(client.user)
+        const data = userData(client.user);
 
         usersInRoom.push(data);
 
@@ -45,11 +58,28 @@ function useRoomActions(ws, request) {
         })
       );
     }
-
-    return;
   };
 
   const leave = async ({ room }) => {
+    if (ws.isAdmin && rooms[room].size > 1) {
+      const arr = Array.from(rooms[room]);
+
+      // Find index of the user that left
+      const index = arr.findIndex((client) => client === ws);
+
+      // Give admin to the next one
+      const nextAdmin: WebSocket = arr[index + 1];
+      nextAdmin.isAdmin = true;
+
+      await RoomsModel.updateOne(
+        { _id: nextAdmin.user._id },
+        { admin_id: request.user._id }
+      );
+
+      // Notify the next admin
+      notifyAdmin(nextAdmin, room);
+    }
+
     rooms[room].delete(ws);
 
     rooms[room].forEach((client) => {
@@ -69,8 +99,20 @@ function useRoomActions(ws, request) {
 
       delete rooms[room];
     }
+  };
 
-    return;
+  const start = async ({ room, data }) => {
+    rooms[room].forEach((client) => {
+      if (client.readyState === WebSocket.OPEN) {
+        client.send(
+          JSON.stringify({
+            room,
+            action: "start",
+            data,
+          })
+        );
+      }
+    });
   };
 
   const wsLeaveRoom = () => {
@@ -81,7 +123,7 @@ function useRoomActions(ws, request) {
     });
   };
 
-  return { join, leave, wsLeaveRoom };
+  return { join, leave, wsLeaveRoom, start };
 }
 
 export default useRoomActions;

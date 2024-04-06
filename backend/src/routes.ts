@@ -14,6 +14,7 @@ routes.get("/me", secure, AuthController.me);
 
 // Rooms
 routes.post("/room/create", secure, RoomsController.create);
+routes.get("/room/start", secure, RoomsController.start);
 routes.get("/room/:id", secure, RoomsController.index);
 
 export default routes;

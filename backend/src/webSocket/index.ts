@@ -1,4 +1,4 @@
-import WebSocket, { WebSocketServer } from "ws";
+import { WebSocketServer } from "ws";
 import passport from "../auth";
 import { parse } from "cookie";
 import useRoomActions from "./roomsActions";
@@ -23,13 +23,20 @@ wss.on("connection", function connection(ws, request) {
   ws.on("close", () => {
     RoomActions.wsLeaveRoom();
   });
-
-  // ws.send("something");
 });
 
 const wssUpgrade = async function upgrade(request, socket, head) {
-  const cookies = parse(request.headers.cookie || "");
-  request.cookies = cookies;
+
+  if (request.url.length > 5) {
+    const requestUrl = new URL(request.url, `http://${request.headers.host}`);
+    const cookies = parse(requestUrl.searchParams.get('cookie'));
+    request.cookies = cookies
+  } else {
+    const cookies = parse(request.headers.cookie || "");
+    request.cookies = cookies;
+  }
+
+  console.log(request.cookies)
 
   passport.authenticate("jwt", { session: false }, (err, user, info) => {
     if (err || !user) {
