@@ -27,5 +27,7 @@
   "Message": "Mensagem",
   "Copy room code": "Copiar código da sala",
   "Room code copied!": "Código da sala copiado!",
-  "Logout": "Sair"
+  "Logout": "Sair",
+  "Already has an account? Sign in!": "Já tem uma conta? Entre!",
+  "New here? Sign up!": "Novo aqui? Cadastre-se!"
 }
