@@ -5,13 +5,15 @@ import RoomsModel from "../../models/Rooms";
 
 const index = async (req: Request, res: Response) => {
   try {
-    // Test if the room exists
-    const exists = await RoomsModel.exists({ _id: req.params.id });
+    // Tenta encontrar a sala pelo ID
+    const room = await RoomsModel.findByPk(req.params.id);
 
-    if (!exists) {
-      throw new Error();
+    if (!room) {
+      // Se não encontrar a sala, lança um erro
+      throw new Error("Sala não encontrada!");
     }
 
+    // Se a sala for encontrada, retorna sucesso
     return RestResponse.success(res, "Sala encontrada!");
   } catch (error) {
     Log.error(error.message);

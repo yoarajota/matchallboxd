@@ -9,6 +9,12 @@ const start = async (req: Request, res: Response) => {
   try {
     const { room } = req.query;
 
+    // Verifica se a sala existe usando Sequelize
+    const roomExists = await RoomsModel.findByPk(room);
+    if (!roomExists) {
+      return RestResponse.error(res, "Sala não encontrada!");
+    }
+
     const response = await tmdb.get(
       "/discover/movie?include_adult=false&include_video=false&language=en-US&page=1&sort_by=popularity.desc"
     );
@@ -46,7 +52,7 @@ const start = async (req: Request, res: Response) => {
           })
         );
 
-        wsc.close()
+        wsc.close();
         resolve(wsc.readyState);
       });
 
@@ -56,6 +62,7 @@ const start = async (req: Request, res: Response) => {
       });
 
       wsc.on("error", function error(e) {
+        reject(e);
         wsc.close();
       });
     });

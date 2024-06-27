@@ -5,6 +5,7 @@ import cors from "cors";
 import routes from "./routes.js";
 import cookieParser from "cookie-parser";
 import wssUpgrade from "./webSocket/index.js";
+import sequelize from "./helpers/sequelize.js";
 
 config();
 
@@ -35,25 +36,28 @@ try {
 
   console.log("✅ - WEB SOCKET");
 } catch (error) {
-  
   console.log("❌ - SOCKET");
 }
 
 // ----- DB -----
 
-const MONGODB_URL = process.env.MONGODB_URL;
+// const MONGODB_URL = process.env.MONGODB_URL;
 
-if (MONGODB_URL) {
-  mongoose.connect(MONGODB_URL, { dbName: "db" });
+// if (MONGODB_URL) {
+//   mongoose.connect(MONGODB_URL, { dbName: "db" });
 
-  const db = mongoose.connection;
-  mongoose.connection.on("error", function (err) {
-    console.log("❌ - DB");
-  });
+//   const db = mongoose.connection;
+//   mongoose.connection.on("error", function (err) {
+//     console.log("❌ - DB");
+//   });
 
-  db.once("open", function () {
-    console.log("✅ - DB");
-  });
-} else {
-  console.log("❌ - MONGO DB KEY MISSING");
-}
+//   db.once("open", function () {
+//     console.log("✅ - DB");
+//   });
+// } else {
+//   console.log("❌ - MONGO DB KEY MISSING");
+// }
+
+sequelize.authenticate().then(() => {
+  console.log("✅ - DB");
+});

@@ -5,13 +5,13 @@ import RoomsModel from "../../models/Rooms";
 
 const create = async (req: Request, res: Response) => {
   try {
-    const room = new RoomsModel({
-      admin_id: req.user._id,
+    // No Sequelize, use o método create para adicionar uma nova sala diretamente
+    const room = await RoomsModel.create({
+      admin_id: req.user.id, // Ajuste conforme a propriedade correta do usuário
     });
-    await room.save();
 
-    // Get the room id
-    const id = room._id;
+    // Com Sequelize, o id já está disponível após a criação
+    const id = room.id;
 
     return RestResponse.success(res, "Nova sala criada!", {
       id,

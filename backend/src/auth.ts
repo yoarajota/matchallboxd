@@ -1,37 +1,37 @@
 import passport from "passport";
 import { Strategy as LocalStrategy } from "passport-local";
-import { Strategy as JwtStrategy } from "passport-jwt";
-import User from "./models/Users"; // Import your User model and UserDocument type
-import { IUser } from "./types";
+import { Strategy as JwtStrategy, ExtractJwt } from "passport-jwt";
+import User from "./models/Users";
+import { Request } from "express";
 
-// Interface for payload in JWT token
+// Interface para o payload do JWT
 interface JwtPayload {
-  _id: string;
+  id: number; // Ajuste conforme o tipo de ID do seu modelo
 }
 
-const cookieExtractor = function (req) {
+// Extrator de token do cookie
+const cookieExtractor = function(req: Request): string | null {
   let token = null;
-
-  if (req && req.cookies) token = req.cookies["access_token"];
-
+  if (req && req.cookies) {
+    token = req.cookies["access_token"];
+  }
   return token;
 };
 
-// Configuration options for JWT strategy
-const opts: any = {}; // Change any to proper type
-opts.jwtFromRequest = cookieExtractor
-opts.secretOrKey = "TOP_SECRET";
+// Opções de configuração para a estratégia JWT
+const opts = {
+  jwtFromRequest: ExtractJwt.fromExtractors([cookieExtractor]),
+  secretOrKey: "TOP_SECRET",
+};
 
-// JWT Strategy for token-based authentication
+// Estratégia JWT para autenticação baseada em token
 passport.use(
-  new JwtStrategy(opts, async function (jwt_payload: JwtPayload, done) {
+  new JwtStrategy(opts, async (jwt_payload: JwtPayload, done) => {
     try {
-      const user = await User.findOne({ _id: jwt_payload._id });
-
+      const user = await User.findByPk(jwt_payload.id);
       if (user) {
         return done(null, user);
       }
-
       return done(null, false);
     } catch (error) {
       return done(error);
@@ -39,7 +39,7 @@ passport.use(
   })
 );
 
-// Local Strategy for user signin
+// Estratégia Local para login do usuário
 passport.use(
   "signin",
   new LocalStrategy(
@@ -47,10 +47,9 @@ passport.use(
       usernameField: "username",
       passwordField: "password",
     },
-    async (username: string, password: string, done) => {
+    async (username, password, done) => {
       try {
-        const user: IUser = await User.findOne({ username });
-
+        const user = await User.findOne({ where: { username } });
         if (!user) {
           return done(null, false, { message: "User not found" });
         }

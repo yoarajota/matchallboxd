@@ -38,8 +38,8 @@ function useRoomActions(ws = null, request = null) {
     if (!rooms[room]) {
       rooms[room] = new Set();
       ws.isAdmin = true;
-      // Store in the room, the admin id
-      await RoomsModel.updateOne({ _id: room }, { admin_id: request.user._id });
+      // Atualizado para usar o método update do Sequelize
+      await RoomsModel.update({ admin_id: request.user._id }, { where: { _id: room } });
 
       notifyAdmin(ws, room);
     }
@@ -80,21 +80,15 @@ function useRoomActions(ws = null, request = null) {
     if (ws.isAdmin && rooms[room].size > 1) {
       const arr = Array.from(rooms[room]);
 
-      // Find index of the user that left
       const index = arr.findIndex((client) => client === ws);
-
-      // Give admin to the next one
       const nextAdmin: WebSocket = arr[index + 1];
 
       if (nextAdmin) {
         nextAdmin.isAdmin = true;
 
-        await RoomsModel.updateOne(
-          { _id: nextAdmin.user._id },
-          { admin_id: request.user._id }
-        );
+        // Atualizado para usar o método update do Sequelize
+        await RoomsModel.update({ admin_id: request.user._id }, { where: { _id: nextAdmin.user._id } });
 
-        // Notify the next admin
         notifyAdmin(nextAdmin, room);
       }
     }
@@ -114,7 +108,8 @@ function useRoomActions(ws = null, request = null) {
     });
 
     if (rooms[room].size === 0) {
-      await RoomsModel.findByIdAndDelete(room);
+      // Atualizado para usar o método destroy do Sequelize
+      await RoomsModel.destroy({ where: { _id: room } });
 
       delete rooms[room];
     }

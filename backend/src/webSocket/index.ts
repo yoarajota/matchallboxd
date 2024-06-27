@@ -36,8 +36,6 @@ const wssUpgrade = async function upgrade(request, socket, head) {
     request.cookies = cookies;
   }
 
-  console.log(request.cookies)
-
   passport.authenticate("jwt", { session: false }, (err, user, info) => {
     if (err || !user) {
       socket.destroy();

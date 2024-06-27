@@ -1,4 +1,3 @@
-import { Document, InferSchemaType } from "mongoose";
-import { Userschema } from "./models/Users";
+import User from "./models/Users";
 
-type IUser = InferSchemaType<typeof Userschema> extends Document
+type IUser = typeof User.prototype;
