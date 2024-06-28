@@ -96,7 +96,6 @@ export default function Room() {
   const [usersInRoom, setUsersInRoom] = useState<User[]>([
     _.pickBy(user, (_: string, key: string) => key !== "username") as User,
   ]);
-  const { width } = useWindowDimensions();
   const [movieList, setMovieList] = useReducer(dispatchReducer, {
     index: 0,
     matches: [],
