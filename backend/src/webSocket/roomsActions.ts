@@ -31,7 +31,7 @@ const allEnded = (room) => {
 };
 
 const userData = (user) =>
-  _.pickBy(user._doc, (_, key) => key !== "password" && key !== "username");
+  _.pickBy(user.dataValues, (_, key) => key !== "password" && key !== "username");
 
 function useRoomActions(ws = null, request = null) {
   const join = async ({ room }) => {
@@ -39,7 +39,7 @@ function useRoomActions(ws = null, request = null) {
       rooms[room] = new Set();
       ws.isAdmin = true;
       // Atualizado para usar o método update do Sequelize
-      await RoomsModel.update({ admin_id: request.user._id }, { where: { _id: room } });
+      await RoomsModel.update({ admin_id: request.user.id }, { where: { id: room } });
 
       notifyAdmin(ws, room);
     }
@@ -87,7 +87,7 @@ function useRoomActions(ws = null, request = null) {
         nextAdmin.isAdmin = true;
 
         // Atualizado para usar o método update do Sequelize
-        await RoomsModel.update({ admin_id: request.user._id }, { where: { _id: nextAdmin.user._id } });
+        await RoomsModel.update({ admin_id: request.user.id }, { where: { id: nextAdmin.user.id } });
 
         notifyAdmin(nextAdmin, room);
       }
@@ -109,7 +109,7 @@ function useRoomActions(ws = null, request = null) {
 
     if (rooms[room].size === 0) {
       // Atualizado para usar o método destroy do Sequelize
-      await RoomsModel.destroy({ where: { _id: room } });
+      await RoomsModel.destroy({ where: { id: room } });
 
       delete rooms[room];
     }

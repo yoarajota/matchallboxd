@@ -29,6 +29,7 @@
   },
   "devDependencies": {
     "@types/node": "^20.11.30",
+    "sequelize-cli": "^6.6.2",
     "tsx": "^4.7.1"
   }
 }

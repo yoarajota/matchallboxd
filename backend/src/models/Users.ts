@@ -1,50 +1,8 @@
-// import mongoose, { InferSchemaType, Schema } from "mongoose";
-// import bcrypt from "bcrypt";
-
-// export const Userschema = new Schema({
-//   nickname: {
-//     type: String,
-//     required: true,
-//   },
-//   username: {
-//     type: String,
-//     required: true,
-//     unique: true,
-//   },
-//   password: {
-//     type: String,
-//     required: true,
-//   },
-// });
-
-// Userschema.pre("save", async function (next) {
-//   const hash = await bcrypt.hash(this.password, 10);
-
-//   this.password = hash;
-//   next();
-// });
-
-// Userschema.methods.isValidPassword = async function (password) {
-//   const user = this;
-//   const compare = await bcrypt.compare(password, user.password);
-
-//   return compare;
-// };
-
-// const UserModel = mongoose.model("Users", Userschema);
-
-// export default UserModel;
-
 import { Model, DataTypes } from "sequelize";
 import sequelize from "../helpers/sequelize";
 import bcrypt from "bcrypt";
 
 class User extends Model {
-  public id!: number;
-  public nickname!: string;
-  public username!: string;
-  public password!: string;
-
   // Método para validar a senha
   public async isValidPassword(password: string): Promise<boolean> {
     return bcrypt.compare(password, this.password);

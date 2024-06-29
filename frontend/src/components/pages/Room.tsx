@@ -127,7 +127,7 @@ export default function Room() {
           // Adiciona apenas usuários que ainda não estão na lista
           const newUsers = data.users.filter(
             (newUser: User) =>
-              users.findIndex((user) => user._id === newUser._id) === -1
+              users.findIndex((user) => user.id === newUser.id) === -1
           );
           return [...users, ...newUsers];
         });
@@ -139,7 +139,7 @@ export default function Room() {
         setUsersInRoom((users) => {
           // Verifica se o novo usuário já está na lista
           if (
-            users.findIndex((user) => user._id === data.new_user._id) !== -1
+            users.findIndex((user) => user.id === data.new_user.id) !== -1
           ) {
             return users;
           }
@@ -154,7 +154,7 @@ export default function Room() {
       if (action === "user_left_room") {
         setUsersInRoom((users) =>
           // Remove o usuário que saiu da lista
-          users.filter((user) => user._id !== data.user_left._id)
+          users.filter((user) => user.id !== data.user_left.id)
         );
       }
 
@@ -294,7 +294,7 @@ export default function Room() {
                 <CardHeader />
                 <CardContent className="flex gap-x-4 flex-wrap">
                   {usersInRoom.map((user: User) => (
-                    <Avatar key={user._id}>
+                    <Avatar key={user.id}>
                       <AvatarFallback>
                         {stringInitialLetters(user.nickname, 2)}
                       </AvatarFallback>
@@ -444,7 +444,7 @@ export default function Room() {
             <SheetContent className="overflow-hidden w-full h-full mx-auto flex flex-col justify-end">
               {messages.map((messageObject, index) => (
                 <div key={index} className="flex gap-2 items-center">
-                  <Avatar key={messageObject.user._id}>
+                  <Avatar key={messageObject.user.id}>
                     <AvatarFallback>
                       {stringInitialLetters(messageObject.user.nickname, 2)}
                     </AvatarFallback>

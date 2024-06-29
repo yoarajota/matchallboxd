@@ -33,7 +33,7 @@ const signin = (req: Request, res: Response, next: NextFunction) => {
           });
 
           return RestResponse.success(res, "Authenticado com sucesso", {
-            user: _.pickBy(user._doc, (_, key: string) => key !== "password"),
+            user: _.pickBy(user.dataValues, (_, key: string) => key !== "password"),
           });
         });
       } catch (error) {
@@ -47,7 +47,7 @@ const signin = (req: Request, res: Response, next: NextFunction) => {
 
 // Função para gerar o token JWT
 const generateToken = (user: IUser): string => {
-  const payload = { _id: user._id, nickname: user.nickname };
+  const payload = { id: user.id, nickname: user.nickname };
 
   return jwt.sign(payload, "TOP_SECRET");
 };

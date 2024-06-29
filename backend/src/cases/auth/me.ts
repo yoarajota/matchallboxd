@@ -6,7 +6,7 @@ import _ from "lodash";
 const me = async (req: Request, res: Response) => {
   try {
     return RestResponse.success(res, "Autenticado", {
-      user: _.pickBy(req.user._doc, (_, key: string) => key !== "password"),
+      user: _.pickBy(req.user.dataValues, (_, key: string) => key !== "password"),
     });
   } catch (error) {
     Log.error(error.message);
